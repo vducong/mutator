@@ -125,3 +125,14 @@ def test_go_profile_finds_a_module_below_the_root(tmp_path):
     source.parent.mkdir()
     source.write_text("package calc\n", encoding="utf-8")
     assert covered_lines(tmp_path, source, "go") == {5}
+
+
+def test_go_package_named_like_its_module_does_not_take_the_root_files_hits(tmp_path):
+    (tmp_path / "shop").mkdir()
+    (tmp_path / "go.mod").write_text("module shop\n", encoding="utf-8")
+    profile = tmp_path / "target" / "coverage" / "go" / "coverage.out"
+    profile.parent.mkdir(parents=True)
+    profile.write_text("mode: set\nshop/server.go:2.1,2.2 1 1\n", encoding="utf-8")
+    nested = tmp_path / "shop" / "server.go"
+    nested.write_text("package shop\nfunc Run() {}\n", encoding="utf-8")
+    assert covered_lines(tmp_path, nested, "go") is None

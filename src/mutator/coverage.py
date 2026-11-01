@@ -218,9 +218,10 @@ def _go_key(root: Path, source_path: Path) -> str | None:
 def _go_lines(profile, source_path: str, key: str | None) -> set[int] | None:
     if not profile:
         return None
-    segments = profile.get(key)
-    if segments is None:
+    if key is None:
         segments = _lookup(profile, source_path)
+    else:
+        segments = profile.get(key)
     if segments is None:
         return None
     covered: set[int] = set()
